@@ -1,4 +1,3 @@
 file(GLOB tmp *.cpp *.hpp)
-set(tron_src ${tron_src} ${tmp})
-
-set(tron_src ${tron_src} PARENT_SCOPE)
+set(test_src ${test_src} ${tmp})
+set(test_src ${test_src} PARENT_SCOPE)
