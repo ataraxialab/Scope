@@ -68,7 +68,7 @@ void OT::FeedOD(const cv::Mat &im_mat, const VecBoxF &od_boxes) {
   SetupEngine(im_mat, same_boxes);
 }
 
-void OT::Tracking(const cv::Mat &im_mat, VecBoxF *ot_boxes) {
+void OT::Tracking(const cv::Mat &im_mat, VecBoxF *ot_boxes,VecInt * ot_uids) {
   for (auto &it : engines_) {
     if (it.tracking_) {
       const cv::Rect &cv_roi = it.engine_.tracking(im_mat);
@@ -120,11 +120,13 @@ void OT::Tracking(const cv::Mat &im_mat, VecBoxF *ot_boxes) {
   });
 
   ot_boxes->clear();
+  ot_uids->clear();
   for (auto &engine : engines_) {
     if (engine.tracking_) {
       engine.tracking_ = 1;
     }
     ot_boxes->push_back(engine.box_);
+    ot_uids->push_back(engine.uid);
   }
 }
 
@@ -137,12 +139,18 @@ void OT::SetupEngine(const cv::Mat &im_mat, const BoxF &box) {
 
   OTTracter tracker;
   tracker.box_ = box;
+  tracker.engine_.init(cv_roi, im_mat);
+  tracker.tracking_ = true;
+  tracker.uid = uid_idx;
+  uid_idx++;
+
+  /*
   if (!NearBorder(box, im_mat.cols)) {
-    tracker.engine_.init(cv_roi, im_mat);
-    tracker.tracking_ = true;
+
   } else {
     tracker.tracking_ = false;
   }
+  */
   engines_.push_back(tracker);
 }
 

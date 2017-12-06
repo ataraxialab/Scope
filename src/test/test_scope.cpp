@@ -3,7 +3,7 @@
 //
 
 #include "../Scope/atlab_scope.h"
-
+#include "sstream"
 
 using namespace cv;
 int main() {
@@ -79,8 +79,24 @@ int main() {
       bbox.height = vpd_output.objects[i].bottom -
           vpd_output.objects[i].top;
 
+      std::ostringstream ss;
+      ss << vpd_output.idx[i];
+
+
+
+      std::string text;
+      text =  ss.str();
+      int fontFace = FONT_HERSHEY_SCRIPT_SIMPLEX;
+      double fontScale = 1;
+      int thickness = 2;
+      cv::Point textOrg(bbox.x, bbox.y-10);
+      cv::putText(frame, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness,8);
+
       if (vpd_output.labels[i] == 1){
-        rectangle(frame,bbox, Scalar( 255, 0, 0 ), 2, 1 );
+    //  int color_r = vpd_output.idx[i] * 1000 %255;
+   //   int color_g = vpd_output.idx[i] * 500 %255;
+   //   int color_b = vpd_output.idx[i] * 700 %255;
+      rectangle(frame,bbox, Scalar( 255, 0, 0 ), 2, 1 );
       } else{
         rectangle(frame,bbox, Scalar( 0, 255, 0 ), 2, 1 );
       }
@@ -88,7 +104,7 @@ int main() {
     }
 
     //Display result
-   // imshow("Tracking",frame);
+    imshow("Tracking",frame);
     writer.write(frame);
     for (int i = 0; i < vpd_output.num_objects; ++i) {
         SAVE_INFO temp;

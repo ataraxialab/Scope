@@ -9,6 +9,7 @@ class OTTracter {
   KCFTracker engine_;
   BoxF box_;
   int count_ = 0;
+  int uid;
   bool tracking_ = false;
 };
 
@@ -24,7 +25,7 @@ class OT {
 
   void FeedOD(const cv::Mat &im_mat, const VecBoxF &od_boxes);
 
-  void Tracking(const cv::Mat &im_mat, VecBoxF *ot_boxes);
+  void Tracking(const cv::Mat &im_mat, VecBoxF *ot_boxes,VecInt * ot_uids);
 
  private:
   inline void SetupEngine(const cv::Mat &im_mat, const BoxF &box);
@@ -44,4 +45,5 @@ class OT {
 
   int history_count_ = -1, history_period_ = 2;
   std::vector<VecBoxF> history_boxes_;
+  int uid_idx =0;
 };

@@ -25,6 +25,7 @@
 struct ScopeEngine {
   TronEngine ssd_;
   VecBoxF boxes_;
+  VecInt uids_;
 
   mongocxx::client conn;
 #if defined(USE_KCF)
@@ -129,7 +130,7 @@ SCOPE_API MRESULT Scope_Detect(SCOPE_ENGINE scope_engine, const cv::Mat &img_dat
 
     ptr->ot_->FeedOD(img_data, remove_box(Boxes::NMS(Bboxes_, 0.5)));
   }
-  ptr->ot_->Tracking(img_data, &ptr->boxes_);
+  ptr->ot_->Tracking(img_data, &ptr->boxes_,&ptr->uids_);
 
 #else
   std::vector<VecBoxF> Bboxes_;
@@ -149,6 +150,7 @@ SCOPE_API MRESULT Scope_Detect(SCOPE_ENGINE scope_engine, const cv::Mat &img_dat
     scope_output->objects[i].top = (MInt32)box.ymin;
     scope_output->objects[i].right = (MInt32)(box.xmax);
     scope_output->objects[i].bottom = (MInt32)(box.ymax);
+    scope_output->idx[i] = (MInt32)(ptr->uids_[i]);
     scope_output->labels[i] = box.label;
   }
   LOG(INFO)<< "num of boxes = "<<scope_output->num_objects;
