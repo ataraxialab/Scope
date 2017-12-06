@@ -108,6 +108,7 @@ int main() {
   }
   video.release();
   writer.release();
+  Scope_Release(vpd_engine);
   delete []vpd_output.objects;
   delete []vpd_output.labels;
   delete []vpd_output.scores;

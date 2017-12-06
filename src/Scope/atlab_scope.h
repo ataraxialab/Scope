@@ -35,14 +35,14 @@ typedef struct {
   /// Pointer to objects' labels, 0 for pedestrian and 1 for vehicle, should be
   /// initialized by user.(Pedestrian is unfinished.)
   MInt32 *labels;
-  float * scores;
-  MInt32 * idx;
+  float *scores;
+  MInt32 *idx;
 } SCOPE_OUTPUT, *PTR_SCOPE_OUTPUT;
 
 typedef struct {
   /// Number of objects
   MInt32 idx;
-  const char* FileName;
+  const char *FileName;
   MInt32 FrameIdx;
   /// Pointer to objects' rectangles, should be initialized by user.
   MRECT BBox;

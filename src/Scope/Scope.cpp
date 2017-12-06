@@ -206,7 +206,7 @@ SCOPE_API MRESULT Scope_WriteDB(SCOPE_ENGINE scope_engine,
 }
 
 
-SCOPE_API MRESULT SCOPE_Release(SCOPE_ENGINE scope_engine) {
+SCOPE_API MRESULT Scope_Release(SCOPE_ENGINE scope_engine) {
   ScopeEngine *ptr = reinterpret_cast<ScopeEngine *>(scope_engine);
 
   if (ptr->ssd_ != nullptr) {
