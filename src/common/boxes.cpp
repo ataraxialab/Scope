@@ -173,4 +173,4 @@ template void Amend(std::vector<VecBoxF> *Gboxes, const VecRectF &crops,
 
 }  // namespace Boxes
 
-}  // namespace Shadow
+}  // namespace Scope

@@ -7,13 +7,12 @@ endif()
 
 set(test_src)
 option(USE_MONGO_CXX_DRIVER "Use mongo CXX drivers" ON)
+option(USE_OpenCV "Use OPENCV" ON)
+
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
+include(cmake/Utils.cmake)
 include(cmake/Dependencies.cmake)
 
-add_subdirectory(test)
+add_subdirectory(src)
 
-foreach (test_src ${test_src})
-    get_filename_component(tron_example_fil_we ${test_src} NAME_WE)
-    add_executable(${tron_example_fil_we} ${test_src})
-    target_link_libraries(${tron_example_fil_we} ${Scope_LINKER_LIBS})
-    install(TARGETS ${tron_example_fil_we} DESTINATION ${Scope_INSTALL_BIN_PREFIX})
-endforeach ()
+
