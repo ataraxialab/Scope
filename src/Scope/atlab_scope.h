@@ -11,25 +11,21 @@
 #define SCOPE_API
 #endif
 
-
 #ifndef __cplusplus
 extern "C" {
 #endif
 
-typedef void* MHandle;
+typedef void *MHandle;
 typedef MHandle SCOPE_ENGINE;
 typedef int MInt32;
-typedef MInt32  MRESULT;
+typedef MInt32 MRESULT;
 
-typedef struct __tag_rect
-{
+typedef struct __tag_rect {
   MInt32 left;
   MInt32 top;
   MInt32 right;
   MInt32 bottom;
 } MRECT, *PMRECT;
-
-
 
 typedef struct {
   /// Number of objects
@@ -54,7 +50,6 @@ typedef struct {
   MInt32 labels;
 } SAVE_INFO, *PTR_SAVE_INFO;
 
-
 /**
  * The function is used to initialize the SCOPE engine.
  *
@@ -63,7 +58,6 @@ typedef struct {
  * @return MRESULT    [OUT] Return MOK if success, otherwise failed.
  */
 SCOPE_API MRESULT Scope_Initial(SCOPE_ENGINE *scope_engine);
-
 
 #if defined(USE_OpenCV)
 #include "opencv2/opencv.hpp"
@@ -77,7 +71,8 @@ SCOPE_API MRESULT Scope_Initial(SCOPE_ENGINE *scope_engine);
  *
  * @return MRESULT    [OUT] Return MOK if success, otherwise failed.
  */
-SCOPE_API MRESULT Scope_Detect(SCOPE_ENGINE scope_engine, const cv::Mat &img_data,
+SCOPE_API MRESULT Scope_Detect(SCOPE_ENGINE scope_engine,
+                               const cv::Mat &img_data,
                                PTR_SCOPE_OUTPUT scope_output);
 #endif
 
