@@ -10,6 +10,7 @@ int main() {
   SCOPE_ENGINE vpd_engine;
 
   MRESULT mresult = Scope_Initial(&vpd_engine);
+  String filename  = "mp4.mp4";
 
   if (mresult != 0){
     std::cout<<"init error"<<std::endl;
@@ -22,7 +23,7 @@ int main() {
   // Ptr<Tracker> tracker= Tracker::create( "MIL");
 
   // Read video
-  VideoCapture video("mp4.mp4");
+  VideoCapture video(filename.c_str());
   Size s = Size((int) video.get(CV_CAP_PROP_FRAME_WIDTH),    //Acquire input size
                 (int) video.get(CV_CAP_PROP_FRAME_HEIGHT));
   int ex = static_cast<int>(video.get(CV_CAP_PROP_FOURCC));
@@ -54,6 +55,12 @@ int main() {
   SCOPE_OUTPUT vpd_output ;
   vpd_output.objects = new MRECT[20];
   vpd_output.labels = new MInt32[20];
+  vpd_output.idx = new MInt32[20];
+  vpd_output.scores = new float[20];
+
+  std::vector<SAVE_INFO> infos;
+  int frameidx =0;
+
   while(video.read(frame))
   {
     //Update tracking results
@@ -83,14 +90,28 @@ int main() {
     //Display result
    // imshow("Tracking",frame);
     writer.write(frame);
+    for (int i = 0; i < vpd_output.num_objects; ++i) {
+        SAVE_INFO temp;
+        temp.score = vpd_output.scores[i];
+        temp.label = vpd_output.labels[i];
+        temp.BBox  = vpd_output.objects[i];
+        temp.FileName = filename.c_str();
+        temp.FrameIdx = frameidx;
+        temp.idx = vpd_output.idx[i];
+        infos.push_back(temp);
+    }
+    Scope_WriteDB(vpd_engine,infos);
     int k = waitKey(10);
     if(k== 27) break;
+    frameidx++;
 
   }
   video.release();
   writer.release();
   delete []vpd_output.objects;
   delete []vpd_output.labels;
+  delete []vpd_output.scores;
+  delete []vpd_output.idx;
 
 
   return 0;

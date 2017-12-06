@@ -15,9 +15,18 @@
 
 #define MAX_OBJECT_NUM 15
 
+#include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/json.hpp>
+
+#include <mongocxx/client.hpp>
+#include <mongocxx/instance.hpp>
+
+
 struct ScopeEngine {
   TronEngine ssd_;
   VecBoxF boxes_;
+
+  mongocxx::client conn;
 #if defined(USE_KCF)
   OT *ot_;
   int od_count_ = -1, od_period_ = 2;
@@ -77,6 +86,11 @@ SCOPE_API MRESULT Scope_Initial(SCOPE_ENGINE *scope_engine) {
 #if defined(USE_KCF)
   vpd_engine_->ot_ = new OT(MAX_OBJECT_NUM);
 #endif
+
+  // get mongodb
+  mongocxx::instance inst{};
+  mongocxx::uri uri("mongodb://localhost:27017");
+  vpd_engine_->conn = mongocxx::client(uri);
 
   *scope_engine = vpd_engine_;
 
@@ -144,6 +158,53 @@ SCOPE_API MRESULT Scope_Detect(SCOPE_ENGINE scope_engine, const cv::Mat &img_dat
 }
 
 #endif
+
+SCOPE_API MRESULT Scope_WriteDB(SCOPE_ENGINE scope_engine,
+                                std::vector<SAVE_INFO> save_infos){
+  ScopeEngine *ptr = reinterpret_cast<ScopeEngine *>(scope_engine);
+  auto collection = ptr->conn["scope"]["test"];
+
+  auto builder = bsoncxx::builder::stream::document{};
+  std::vector<bsoncxx::document::value> documents;
+
+  for(std::vector<SAVE_INFO>::iterator iterator = save_infos.begin();
+      iterator!=save_infos.end();iterator++){
+
+      bsoncxx::document::value doc_value = builder
+                << "idx" << iterator->idx
+                << "filename" << iterator->FileName
+                << "frameidx" << iterator->FrameIdx
+                << "bbox" << bsoncxx::builder::stream::open_array
+                    <<bsoncxx::builder::stream::open_document
+                    << "x" << iterator->BBox.left
+                    << "y" << iterator->BBox.top
+                    << bsoncxx::builder::stream::close_document
+                    <<bsoncxx::builder::stream::open_document
+                    << "x" << iterator->BBox.right
+                    << "y" << iterator->BBox.top
+                    << bsoncxx::builder::stream::close_document
+                    <<bsoncxx::builder::stream::open_document
+                    << "x" << iterator->BBox.right
+                    << "y" << iterator->BBox.bottom
+                    << bsoncxx::builder::stream::close_document
+                    <<bsoncxx::builder::stream::open_document
+                    << "x" << iterator->BBox.left
+                    << "y" << iterator->BBox.bottom
+                    << bsoncxx::builder::stream::close_document
+                << bsoncxx::builder::stream::close_array
+                << "score" << iterator->score
+                << "label" << iterator->label
+                << bsoncxx::builder::stream::finalize;
+
+      documents.push_back(doc_value);
+  }
+  if (documents.size() >0) collection.insert_many(documents);
+
+
+
+  return 0;
+}
+
 
 SCOPE_API MRESULT SCOPE_Release(SCOPE_ENGINE scope_engine) {
   ScopeEngine *ptr = reinterpret_cast<ScopeEngine *>(scope_engine);

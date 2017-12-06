@@ -35,19 +35,21 @@ typedef struct {
   /// Pointer to objects' labels, 0 for pedestrian and 1 for vehicle, should be
   /// initialized by user.(Pedestrian is unfinished.)
   MInt32 *labels;
+  float * scores;
+  MInt32 * idx;
 } SCOPE_OUTPUT, *PTR_SCOPE_OUTPUT;
 
 typedef struct {
   /// Number of objects
   MInt32 idx;
-  std::string FileName;
+  const char* FileName;
   MInt32 FrameIdx;
   /// Pointer to objects' rectangles, should be initialized by user.
   MRECT BBox;
   float score;
   /// Pointer to objects' labels, 0 for pedestrian and 1 for vehicle, should be
   /// initialized by user.(Pedestrian is unfinished.)
-  MInt32 labels;
+  MInt32 label;
 } SAVE_INFO, *PTR_SAVE_INFO;
 
 /**
@@ -66,7 +68,6 @@ SCOPE_API MRESULT Scope_Initial(SCOPE_ENGINE *scope_engine);
  *
  * @param  vpd_engine [IN] Handle to the SCOPE engine.
  * @param  img_data   [IN] input image data.
- * @param  roi        [IN] Region of interest to detect.
  * @param  vpd_output [OUT] Pointer to the SCOPE_OUTPUT struct.
  *
  * @return MRESULT    [OUT] Return MOK if success, otherwise failed.
