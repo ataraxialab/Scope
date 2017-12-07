@@ -3,7 +3,25 @@ include(FindPackageHandleStandardArgs)
 set(tron_ROOT_DIR ${PROJECT_SOURCE_DIR}/third_party/tron/build CACHE PATH "Folder contains tron")
 
 set(tron_DIR ${tron_ROOT_DIR})
-message("aa")
+
+set(tron_PLATFORM)
+set(tron_ARC)
+set(tron_LIBS)
+if (MSVC)
+    set(tron_PLATFORM windows)
+    set(tron_ARC x86_64)
+elseif (ANDROID)
+    set(tron_PLATFORM android)
+    set(tron_ARC ${ANDROID_ABI})
+elseif (APPLE)
+    set(tron_PLATFORM darwin)
+    set(tron_ARC x86_64)
+elseif (UNIX AND NOT APPLE)
+    set(tron_PLATFORM linux)
+    set(tron_ARC x86_64)
+endif ()
+
+
 find_path(tron_INCLUDE_DIRS
         NAMES tron_algorithm.hpp
         PATHS ${tron_DIR}
@@ -15,13 +33,13 @@ if (NOT MSVC)
     find_library(shadow_LIBRARIES
             NAMES shadow
             PATHS ${tron_DIR}
-            PATH_SUFFIXES lib lib64 lib/x86_64 lib/x86_64-linux-gnu lib/x64 lib/x86 lib/darwin/x86_64
+            PATH_SUFFIXES lib lib64 lib/${tron_PLATFORM}/${tron_ARC}
             DOC "tron library"
             NO_DEFAULT_PATH)
     find_library(tron_LIBRARIES
             NAMES tron
             PATHS ${tron_DIR}
-            PATH_SUFFIXES lib lib64 lib/x86_64 lib/x86_64-linux-gnu lib/x64 lib/x86 lib/darwin/x86_64
+            PATH_SUFFIXES lib lib64 lib/${tron_PLATFORM}/${tron_ARC}
             DOC "tron library"
             NO_DEFAULT_PATH)
     set(tron_LIBRARIES ${shadow_LIBRARIES} ${tron_LIBRARIES})
